@@ -1,9 +1,13 @@
+import java.text.DecimalFormat;
+
+import static java.lang.Double.parseDouble;
+import static java.lang.Long.parseLong;
 import static javax.swing.JOptionPane.*;
 import static java.lang.Integer.*;
 
 public class Util {
 
-    private BilheteUnico [] bilhete = new BilheteUnico[5];
+    private BilheteUnico[] bilhete = new BilheteUnico[5];
     private int index;
 
     public void menuPrincipal() {
@@ -12,16 +16,19 @@ public class Util {
 
         do {
             opcao = parseInt(showInputDialog(menu));
-            if(opcao < 1|| opcao >3) {
+            if (opcao < 1 || opcao > 3) {
                 showMessageDialog(null, "Opção Inválida");
             } else {
                 switch (opcao) {
                     case 1:
                         menuAdministrador();
                         break;
+                    case 2:
+                        menuUsuario();
+                        break;
                 }
             }
-        } while(opcao != 3);
+        } while (opcao != 3);
     }
 
     private void menuAdministrador() {
@@ -30,12 +37,103 @@ public class Util {
 
         do {
             opcao = parseInt(showInputDialog(menuAdmin));
-            if(opcao < 1|| opcao >3) {
+            if (opcao < 1 || opcao > 4) {
                 showMessageDialog(null, "Opção Inválida");
             } else {
+                switch (opcao) {
+                    case 1:
+                        emitirBilhete();
+                        break;
+                    case 2:
+                        listarBilhetes();
+                }
+            }
 
-        }while (opcao != 4);
+        } while (opcao != 4);
 
+    }
+
+    private void listarBilhetes() {
+        DecimalFormat df = new DecimalFormat("0.00");
+        String aux = "";
+
+        for (int i = 0; i < index; i++) {
+            aux += "Número do bilhete: " + bilhete[i].numero + "\n";
+            aux += "Número do usuário: " + bilhete[i].usuario.nome + "\n";
+            aux += "Saldo R$ " + df.format(bilhete[i].consultarSaldo()) + "\n";
+            aux += "Tipo de tarifa: " + bilhete[i].usuario.tipoTarifa + "\n";
+            aux += "----------------------------------------\n";
+        }
+        showMessageDialog(null, aux);
+    }
+
+    private void emitirBilhete() {
+        String nome;
+        long cpf;
+        String perfil;
+
+        if (index < bilhete.length) {
+            nome = showInputDialog("Nome:");
+            cpf = parseLong(showInputDialog("CPF"));
+            perfil = showInputDialog("Estudante ou Professor ou Comum");
+            bilhete[index] = new BilheteUnico(new Usuario(nome, cpf, perfil));
+            index++;
+        }
+    }
+
+    private void menuUsuario() {
+        int opcao = 0;
+        String menuUser = "1. Consultar Saldo\n2. Carregar Bilhete\n3. Passar na catraca\n4. Sair";
+
+        do {
+            opcao = parseInt(showInputDialog(menuUser));
+            if (opcao < 1 || opcao > 4) {
+                showMessageDialog(null, "Opção Inválida");
+            } else {
+                switch (opcao) {
+                    case 1:
+                        consultarSaldo();
+                        break;
+                    case 2:
+                        carregarBilhete();
+                        break;
+                    case 3:
+                        passarNaCatraca();
+                        break;
+                }
+            }
+        } while (opcao != 4);
+    }
+
+    private void consultarSaldo() {
+        int posicao = pesquisar();
+        if (posicao != -1) {
+            showMessageDialog(null, bilhete[posicao].consultarSaldo());
+        }
+    }
+
+    private void carregarBilhete() {
+        int posicao = pesquisar();
+        double valor;
+        if (posicao != -1) {
+            valor = parseDouble(showInputDialog("Valor da Recarga"));
+            bilhete[posicao].carregar(valor);
+        }
+    }
+
+    private void passarNaCatraca() {
+
+    }
+
+    private int pesquisar() {
+        long cpf = parseLong(showInputDialog("CPF"));
+        for (int i = 0; i < index; i++) {
+            if (bilhete[i].usuario.cpf == cpf) {
+                return i;
+            }
+        }
+        showMessageDialog(null,cpf + " não encontrado");
+        return -1;
     }
 }
 
