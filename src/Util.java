@@ -7,7 +7,7 @@ import static java.lang.Integer.*;
 
 public class Util {
 
-    private BilheteUnico[] bilhete = new BilheteUnico[5];
+    private BilheteUnico[] bilhete = new BilheteUnico[3];
     private int index;
 
     public void menuPrincipal() {
@@ -46,6 +46,10 @@ public class Util {
                         break;
                     case 2:
                         listarBilhetes();
+                        break;
+                    case 3:
+                        removerBilhete();
+                        break;
                 }
             }
 
@@ -78,6 +82,18 @@ public class Util {
             perfil = showInputDialog("Estudante ou Professor ou Comum");
             bilhete[index] = new BilheteUnico(new Usuario(nome, cpf, perfil));
             index++;
+        }
+    }
+
+    private void removerBilhete() {
+        int posicao = pesquisar();
+        int resposta;
+        if (posicao != -1) {
+            resposta = showConfirmDialog(null, "Tem certeza que deseja remover?");
+            if(resposta == YES_OPTION) {
+                bilhete[posicao] = bilhete[index-1];
+                index--;
+            }
         }
     }
 
@@ -122,7 +138,10 @@ public class Util {
     }
 
     private void passarNaCatraca() {
-
+        int posicao = pesquisar();
+        if (posicao != 1) {
+            bilhete[posicao].passarNaCatraca();
+        }
     }
 
     private int pesquisar() {
